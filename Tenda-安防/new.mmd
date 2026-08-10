@@ -1,0 +1,55 @@
+
+flowchart TB
+    App["你的 ViewController<br/>self.player 强引用播放器"]
+    URL["Documents/video.data<br/>NSURL(fileURLWithPath:)"]
+    Options["IJKFFOptions<br/>packet-buffering = 0<br/>infbuf = 0"]
+
+    Controller["IJKFFMoviePlayerController<br/>Objective-C 播放器门面"]
+    GLView["IJKSDLGLView<br/>player.view / OpenGL ES 渲染 View"]
+    AudioKit["IJKAudioKit<br/>配置 iOS Audio Session"]
+    MsgLoop["media_player_msg_loop<br/>消息线程 -> 主线程通知"]
+
+    MP["IjkMediaPlayer<br/>C 层播放器状态机"]
+    FFP["FFPlayer / ff_ffplay<br/>播放核心、队列、时钟、缓冲"]
+
+    Pipeline["IJKFF_Pipeline<br/>ffpipeline_ios"]
+    Vout["SDL_VoutIos GLES2<br/>视频输出"]
+    Aout["SDL_Aout iOS<br/>音频输出"]
+    VDec["视频解码节点<br/>FFmpeg 或 VideoToolbox"]
+    
+    Read["read_thread<br/>读取、探测、分流"]
+    ADec["audio_thread<br/>音频解码"]
+    VThread["video_thread<br/>视频解码/帧队列"]
+    FFMPEG["FFmpeg<br/>libavformat / libavcodec<br/>libswscale / libswresample"]
+
+    App -->|"initWithContentURL:withOptions:"| Controller
+    URL --> Controller
+    Options -.->|"applyTo:"| MP
+
+    Controller -->|"ijkmp_ios_create"| MP
+    Controller -->|"创建并暴露为 player.view"| GLView
+    Controller -->|"setupAudioSession"| AudioKit
+    Controller -->|"prepareToPlay"| MP
+    Controller -.->|"持有/注册"| MsgLoop
+
+    MP -->|"ijkmp_create"| FFP
+    MP -->|"ijkmp_set_data_source"| Read
+    MP -->|"ijkmp_prepare_async<br/>ffp_prepare_async_l"| FFP
+    FFP -->|"创建"| Pipeline
+    FFP -->|"创建"| Read
+
+    Pipeline -->|"open_audio_output"| Aout
+    Pipeline -->|"open_video_decoder"| VDec
+    MP -->|"ijkmp_ios_set_glview"| Vout
+    Vout -->|"绑定并呈现画面"| GLView
+
+    Read -->|"avformat_open_input<br/>avformat_find_stream_info<br/>av_read_frame"| FFMPEG
+    Read -->|"压入音视频 PacketQueue"| ADec
+    Read -->|"压入音视频 PacketQueue"| VThread
+    ADec -->|"avcodec 解码 + 重采样"| FFMPEG
+    VThread -->|"avcodec 解码"| VDec
+    VDec -->|"VideoPicture / Overlay"| Vout
+    ADec --> Aout
+
+    FFP -->|"FFP_MSG_PREPARED / FFP_REQ_START"| MsgLoop
+    MsgLoop -->|"postEvent: 主线程"| Controller
