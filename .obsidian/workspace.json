@@ -185,7 +185,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -199,7 +200,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ab8a5fbfb5f339b2",
+  "active": "073df2c87adbfd0b",
   "lastOpenFiles": [
     "Deepseek-Harness/DSH白皮书阅读(二).md",
     "快捷小站/Vim基础使用.md",
