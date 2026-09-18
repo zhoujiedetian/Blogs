@@ -3,9 +3,9 @@
   "outputLocations": {},
   "outputSettings": {
     "html": {
-      "folder": "快捷小站",
+      "folder": "iOS学习笔记",
       "attachments": {
-        "mode": "subfolder",
+        "mode": "folder",
         "path": "source"
       },
       "duplicates": "update",
@@ -17,7 +17,7 @@
   },
   "onenoteAttachments": {},
   "sourceFolders": {
-    "html": "/Users/zhoujie/Downloads/我的笔记"
+    "html": "/Users/zhoujie/Downloads"
   },
-  "lastSourceFolder": "/Users/zhoujie/Downloads/我的笔记"
+  "lastSourceFolder": "/Users/zhoujie/Downloads"
 }
