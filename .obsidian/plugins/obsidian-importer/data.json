@@ -1,0 +1,23 @@
+{
+  "secrets": {},
+  "outputLocations": {},
+  "outputSettings": {
+    "html": {
+      "folder": "快捷小站",
+      "attachments": {
+        "mode": "subfolder",
+        "path": "source"
+      },
+      "duplicates": "update",
+      "saveSourceId": false,
+      "idProperty": "html-source",
+      "template": "",
+      "titleTemplate": "{{title}}"
+    }
+  },
+  "onenoteAttachments": {},
+  "sourceFolders": {
+    "html": "/Users/zhoujie/Downloads/我的笔记"
+  },
+  "lastSourceFolder": "/Users/zhoujie/Downloads/我的笔记"
+}
