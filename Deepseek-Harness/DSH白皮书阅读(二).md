@@ -1,4 +1,4 @@
-# DeepseekHarness源码阅读（二）
+# DSH白皮书阅读(二)
 #### Profile：一个可启动的配置栈
 dsh 用 profile 表示"一种可启动的形态"。官方内置两个，其余用插件创建：
 | Profile | 用途 | 命令 |
@@ -88,5 +88,18 @@ package.json 里如何声明 client 半：
   }
 }
 ```
+- host 半：exports["."] → apply(ctx)（cordis 插件主体）
+- client 半：exports["./client"] → 浏览器侧的 apply(ctx)
+- inject：声明需要的服务（cordis 依赖注入）
 
+#### 扩展点：改行为优先找钩子，别 fork 核心
+官方原则（CONTRIBUTING/AGENTS.md 明示）："Plugins, not loop changes: new behavior goes on documented extension points"。新手最常见的错误是改核心 loop——正确做法是用扩展点。
+| 扩展点 | 位置 | 用途 |
+|---|---|---|
+| `agent/request` waterfall | `agent-loop` | 每次模型请求前修改配置，例如 provider、model、reasoningEffort、tools；提速插件可在这里介入。 |
+| `agent/request-error` | `agent-loop` | 请求失败时进行干预；官方 compaction 插件用它恢复上下文溢出。 |
+| `conversationEvents.register` | Client runtime | 订阅或注入对话事件，例如 `tool/call`、`turn/start`。 |
+| `ctx.slots.inject` | Client `ui-slots` | 向界面槽位注入 UI，例如在 `turnTail` 显示产物文件行。 |
+| Settings 服务 | `dsh-settings` | 注册用户可配置的命名空间，并由设置页自动渲染。 |
+| `ctx.provide` / `ctx.get` | Cordis | 在插件间提供与获取服务，实现跨插件协作。 |
 
